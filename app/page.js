@@ -4,12 +4,14 @@ import { useState } from "react";
 import { school, T, levelCards } from "@/lib/data";
 import { submitApplication } from "@/lib/apply";
 export default function Home() {
-  const [sent, setSent] = useState(false); const [who, setWho] = useState("Parent for a child"); const adult = T.adult || who === "Adult student"; const TER = ["Diploma","Undergraduate","Postgraduate","Short courses"]; const terLv = school.levels.filter(l=>TER.includes(l)); const lowLv = school.levels.filter(l=>!TER.includes(l)); const hasBoth = terLv.length>0 && lowLv.length>0; const [fm, setFm] = useState({name:"",child:"",phone:"",level:"",note:""}); const u = k => e => setFm({...fm,[k]:e.target.value}); const lvl = adult ? terLv : lowLv; const lev = lvl.includes(fm.level) ? fm.level : lvl[0];
+  const [sent, setSent] = useState(false); const [menu, setMenu] = useState(false); const [who, setWho] = useState("Parent for a child"); const adult = T.adult || who === "Adult student"; const TER = ["Diploma","Undergraduate","Postgraduate","Short courses"]; const terLv = school.levels.filter(l=>TER.includes(l)); const lowLv = school.levels.filter(l=>!TER.includes(l)); const hasBoth = terLv.length>0 && lowLv.length>0; const [fm, setFm] = useState({name:"",child:"",phone:"",level:"",note:""}); const u = k => e => setFm({...fm,[k]:e.target.value}); const lvl = adult ? terLv : lowLv; const lev = lvl.includes(fm.level) ? fm.level : lvl[0];
   return (<>
     <div className="bar-top"><div className="wrap">Call {school.phone}</div></div>
     <header className="hero"><div className="wrap">
       <div className="top"><Link className="brand" href="/">{school.name}</Link>
-        <nav><a href="#admissions">Admissions</a><a href="#events">Events</a><Link href="/track">Track application</Link><Link href="/faq">FAQ</Link><Link href="/alumni">Alumni</Link><Link className="btn" href="/login">Portal login</Link></nav></div>
+        <nav><a href="#admissions">Admissions</a><a href="#events">Events</a><Link href="/track">Track application</Link><Link href="/faq">FAQ</Link><Link href="/alumni">Alumni</Link><Link className="btn" href="/login">Portal login</Link></nav><button className="burger" aria-label="Open menu" onClick={() => setMenu(true)}>\u2630</button></div>
+      {menu && <div className="scrim" onClick={() => setMenu(false)}></div>}
+      <aside className={"drawer" + (menu ? " open" : "")}><div className="drawer-head"><span>{school.name}</span><button aria-label="Close menu" onClick={() => setMenu(false)}>\u00d7</button></div><a href="#admissions" onClick={() => setMenu(false)}>Admissions</a><a href="#events" onClick={() => setMenu(false)}>Events</a><Link href="/track">Track application</Link><Link href="/faq">FAQ</Link><Link href="/alumni">Alumni</Link><Link className="btn" href="/login" style={{ marginTop: "1rem", textAlign: "center" }}>Portal login</Link></aside>
       <h1>{school.tagline.split(". ").length > 1 ? <>{school.tagline.split(". ")[0]}. <span>{school.tagline.split(". ").slice(1).join(". ")}</span></> : <span>{school.tagline}</span>}</h1>
       <p>{T.hero}</p>
       <div className="row"><a className="btn" href="#admissions">Apply for next {T.term.toLowerCase()}</a><a className="btn ghost" href="#visit">Book a visit</a></div>

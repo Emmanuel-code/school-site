@@ -39,3 +39,13 @@ table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:.55rem .
 body{background:var(--paper)}.bar-top{background:#0b1227;color:#b9f3d0}.hero{background:radial-gradient(circle at 85% 0,#5144c8 0,transparent 30%),linear-gradient(135deg,#10182d,#263567 65%,#4d429f);padding-bottom:6rem}.top{padding-top:1.4rem}.hero h1{letter-spacing:-.07em}.hero h1 span{border:0;color:#b9f3d0}.btn{background:#b9f3d0;color:#10182d;transition:transform .2s,box-shadow .2s}.btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px #0b102433}.btn.dark{background:#111a35}.panel{border-radius:22px;border-color:#e3e7f0;box-shadow:0 10px 30px #19284b0b}.panel:hover{box-shadow:0 18px 42px #19284b16}.stat{color:#5e50eb}.sky{background:#edf1ff}footer{background:#0b1227}@media(max-width:760px){.hero{padding-bottom:4rem}.hero-image img{height:280px!important}}
 
 @media(max-width:760px){.top{flex-wrap:wrap;gap:.35rem .75rem}.top nav{flex-wrap:wrap;gap:.45rem .9rem;font-size:.93rem}.top nav a{white-space:nowrap}.brand{font-size:1.08rem}}
+
+.burger{display:none;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:10px;padding:.35rem .65rem;font-size:1.15rem;line-height:1;cursor:pointer}
+.scrim{position:fixed;inset:0;background:rgba(5,7,15,.55);z-index:55}
+.drawer{position:fixed;top:0;right:0;height:100dvh;width:min(78vw,300px);background:#0b1227;color:#fff;z-index:60;padding:1.1rem 1.25rem;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s ease;box-shadow:-20px 0 50px rgba(0,0,0,.35)}
+.drawer.open{transform:none}
+.drawer a{color:#fff;text-decoration:none;padding:.75rem .15rem;border-bottom:1px solid rgba(255,255,255,.14);font-weight:600}
+.drawer a.btn{border-bottom:0;color:#10182d}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-family:var(--display);font-weight:800}
+.drawer-head button{background:none;border:0;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1}
+@media(max-width:760px){.top nav{display:none}.burger{display:inline-flex}}
