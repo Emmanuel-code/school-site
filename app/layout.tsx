@@ -2,9 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.app',
+  title: 'Bernavi International School',
+  description: 'Bernavi International School, Tamale — Crèche to JHS. Apply online, track your application, pay fees and view results from the parent portal.',
   icons: {
     icon: [
       {
