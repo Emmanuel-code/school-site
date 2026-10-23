@@ -12,7 +12,7 @@ export default function Login() {
     const role = a.adult ? "student" : "parent"; localStorage.setItem("gh:me", JSON.stringify({ name: a.by || a.n, role })); r.push(`/portal/${role}`); };
   return (<main className="wrap" style={{ padding: "4rem 1.25rem" }}><h1>Sign in to the portal</h1>
     <form className="panel stack" style={{ maxWidth: 420, margin: "1.5rem 0" }} onSubmit={enter}><h3>New students and parents</h3><p className="muted">Use the username and PIN you received when your application was approved.</p>
-      <label>Username<input required value={u} onChange={e => setU(e.target.value)} placeholder="GH-12345" /></label><label>PIN<input required type="password" inputMode="numeric" value={p} onChange={e => setP(e.target.value)} /></label>
+      <label>Username<input required value={u} onChange={e => setU(e.target.value)} placeholder="BN-12345" /></label><label>PIN<input required type="password" inputMode="numeric" value={p} onChange={e => setP(e.target.value)} /></label>
       <button className="btn dark">Sign in</button>{err && <p role="alert">{err} <Link href="/track">Track application</Link></p>}</form>
     <p className="muted">Demo mode: pick who you are to explore the portal.</p>
     <div className="grid" style={{ marginTop: "1rem" }}>{Object.entries(roles).filter(([k]) => T.adult ? k !== "parent" : true).map(([k, v]) => (

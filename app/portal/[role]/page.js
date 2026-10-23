@@ -60,7 +60,7 @@ function Assign() { const [h, setH] = useStore("hw", homework); const [t, setT] 
 const Stats = () => { const [ap] = useStore("apps", apps); return <div className="grid span">{[["Enrolled", stats.enrolled], ["Attendance", stats.attendance + "%"], ["Fees collected", stats.collected + "%"], ["Open applications", ap.filter(x => x.s < 3 && !x.dec).length]].map(([l, v]) => <div className="panel" key={l}><div className="stat">{v}</div><span className="muted">{l}</span></div>)}</div>; };
 const Alerts = () => <div className="span"><h3>Needs attention</h3>{alerts.map(a => <div className="warn" key={a}>{a}</div>)}</div>;
 function Pipeline() { const [a, setA] = useStore("apps", apps);
-  const mv = (id, d) => setA(a.map(x => { if (x.id !== id) return x; const s = Math.max(0, Math.min(3, x.s + d)); const login = s === 3 && !x.login ? { user: x.ref || "GH-" + x.id, pin: String(Math.floor(1000 + Math.random() * 9000)) } : x.login; return { ...x, s, login }; }));
+  const mv = (id, d) => setA(a.map(x => { if (x.id !== id) return x; const s = Math.max(0, Math.min(3, x.s + d)); const login = s === 3 && !x.login ? { user: x.ref || "BN-" + x.id, pin: String(Math.floor(1000 + Math.random() * 9000)) } : x.login; return { ...x, s, login }; }));
   const dc = (id, v) => setA(a.map(x => x.id === id ? { ...x, dec: v } : x));
   return <div className="grid span">{stages.map((s, si) => <div className="panel" key={s}><h3>{s} ({a.filter(x => x.s === si).length})</h3>{a.filter(x => x.s === si).map(x => <div className="ev" key={x.id} style={{ display: "block" }}>
     <div style={{ display: "flex", alignItems: "center" }}><span style={{ flex: 1 }}>{x.n}<br /><span className="muted">{x.l}{x.ref ? ", " + x.ref : ""}</span></span>
