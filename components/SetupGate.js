@@ -10,7 +10,7 @@ export default function SetupGate({ children }) {
   const [cfg, setCfg] = useState(undefined);
   const [showWizard, setShowWizard] = useState(false);
   useEffect(() => {
-    try { const s = localStorage.getItem("gh:setup"); if (s) { const c = JSON.parse(s); applyDemo(c); seedOnce(c.type); paint(c.accent); setCfg(c); } else setCfg(null); } catch { setCfg(null); }
+    try { const s = localStorage.getItem("gh:setup"); if (s) { const c = JSON.parse(s); applyDemo(c); seedOnce(c.type); paint(c.accent); document.title = c.name; setCfg(c); } else setCfg(null); } catch { setCfg(null); }
     const open = () => setShowWizard(true);
     const reset = () => { try { localStorage.removeItem("gh:setup"); } catch {} location.reload(); };
     window.addEventListener("gh:rebrand", open);
