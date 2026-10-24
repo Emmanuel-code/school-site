@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import SetupGate from "@/components/SetupGate"
 
 export const metadata: Metadata = {
   title: 'Bernavi International School',
@@ -39,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <SetupGate>{children}</SetupGate>
       </body>
     </html>
   )

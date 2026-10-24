@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { school, T, levelCards } from "@/lib/data";
 import { submitApplication } from "@/lib/apply";
 export default function Home() {
-  const [sent, setSent] = useState(false); const [menu, setMenu] = useState(false); const [who, setWho] = useState("Parent for a child"); const adult = T.adult || who === "Adult student"; const TER = ["Diploma","Undergraduate","Postgraduate","Short courses"]; const terLv = school.levels.filter(l=>TER.includes(l)); const lowLv = school.levels.filter(l=>!TER.includes(l)); const hasBoth = terLv.length>0 && lowLv.length>0; const [fm, setFm] = useState({name:"",child:"",phone:"",level:"",note:""}); const u = k => e => setFm({...fm,[k]:e.target.value}); const lvl = adult ? terLv : lowLv; const lev = lvl.includes(fm.level) ? fm.level : lvl[0];
+  const [sent, setSent] = useState(false); const [branded, setBranded] = useState(false); useEffect(() => { try { setBranded(!!localStorage.getItem("gh:setup")); } catch {} }, []); const [menu, setMenu] = useState(false); const [who, setWho] = useState("Parent for a child"); const adult = T.adult || who === "Adult student"; const TER = ["Diploma","Undergraduate","Postgraduate","Short courses"]; const terLv = school.levels.filter(l=>TER.includes(l)); const lowLv = school.levels.filter(l=>!TER.includes(l)); const hasBoth = terLv.length>0 && lowLv.length>0; const [fm, setFm] = useState({name:"",child:"",phone:"",level:"",note:""}); const u = k => e => setFm({...fm,[k]:e.target.value}); const lvl = adult ? terLv : lowLv; const lev = lvl.includes(fm.level) ? fm.level : lvl[0];
   return (<>
     <div className="bar-top"><div className="wrap">Call {school.phone}</div></div>
     <header className="hero"><div className="wrap">
@@ -14,7 +14,7 @@ export default function Home() {
       <aside className={"drawer" + (menu ? " open" : "")}><div className="drawer-head"><span>{school.name}</span><button aria-label="Close menu" onClick={() => setMenu(false)}>\u00d7</button></div><a href="#admissions" onClick={() => setMenu(false)}>Admissions</a><a href="#events" onClick={() => setMenu(false)}>Events</a><Link href="/track">Track application</Link><Link href="/faq">FAQ</Link><Link href="/alumni">Alumni</Link><Link className="btn" href="/login" style={{ marginTop: "1rem", textAlign: "center" }}>Portal login</Link></aside>
       <h1>{school.tagline.split(". ").length > 1 ? <>{school.tagline.split(". ")[0]}. <span>{school.tagline.split(". ").slice(1).join(". ")}</span></> : <span>{school.tagline}</span>}</h1>
       <p>{T.hero}</p>
-      <div className="row"><a className="btn" href="#admissions">Apply for next {T.term.toLowerCase()}</a><a className="btn ghost" href="#visit">Book a visit</a></div>
+      <div className="row"><a className="btn" href="#admissions">Apply for next {T.term.toLowerCase()}</a><a className="btn ghost" href="#visit">Book a visit</a>{branded ? <button className="btn ghost" onClick={() => window.dispatchEvent(new Event("gh:reset-sample"))}>Back to the Bernavi sample</button> : <button className="btn ghost" onClick={() => window.dispatchEvent(new Event("gh:rebrand"))}>Make it yours \u2014 try your school&apos;s name</button>}</div>
       <div className="hero-image" style={{marginTop:"3rem",borderRadius:"28px",overflow:"hidden",border:"1px solid #ffffff24",boxShadow:"0 30px 80px #080d1f66"}}><img src="/campus-future.png" alt="Students learning together on the school campus" style={{display:"block",width:"100%",height:"min(42vw,440px)",objectFit:"cover"}} /></div>
     </div></header>
     <section className="s" style={{paddingBottom:"2rem"}}><div className="wrap"><p style={{color:"#5e50eb",fontWeight:800,letterSpacing:".12em",textTransform:"uppercase",fontSize:".75rem"}}>Your journey, made simple</p><div className="grid"><div className="panel"><b>01 · Discover</b><p className="muted">Explore programmes, meet our community, and find the right path.</p></div><div className="panel"><b>02 · Apply</b><p className="muted">Send your details online in under five minutes. No paperwork maze.</p></div><div className="panel"><b>03 · Belong</b><p className="muted">Follow your application, pay fees, and stay connected from one portal.</p></div></div></div></section>
