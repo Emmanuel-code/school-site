@@ -49,3 +49,10 @@ body{background:var(--paper)}.bar-top{background:#0b1227;color:#b9f3d0}.hero{bac
 .drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-family:var(--display);font-weight:800}
 .drawer-head button{background:none;border:0;color:#fff;font-size:1.5rem;cursor:pointer;line-height:1}
 @media(max-width:760px){.top nav{display:none}.burger{display:inline-flex}}
+
+/* Visibility fixes (2026-10-24): never let the browser dark-mode the form controls,
+   and never let ghost buttons go dark-on-dark in the hero. */
+:root{color-scheme:light}
+input,select,textarea{color:var(--ink)}
+input::placeholder,textarea::placeholder{color:var(--mute);opacity:1}
+.hero .btn.ghost{color:#fff}
