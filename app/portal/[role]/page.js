@@ -120,13 +120,13 @@ export default function Portal() {
   const [tab, setTab] = useState(navFor(role)[0]); const [ci, setCi] = useState(0); const [me] = useStore("me", null); const [theme, setTheme] = useStore("theme", school.accent || "#123b2e");
   if (!cfg) return <main className="wrap"><h1>Unknown role</h1></main>;
   const [ap] = useStore("apps", apps);
-  const kids = role === "parent" && me && me.role === "parent" ? ap.filter(x => x.s === 3 && x.by === me.name).map(x => ({ n: x.n, cls: x.l })) : [];
+  const kids = role === "parent" && me && me.role === "parent" ? ap.filter(x => x.s === 3 && x.by === me.name).map(x => ({ n: x.n, cls: x.l, id: x.ref || x.id })) : [];
   const kidList = kids.length ? kids : children;
   const ch = role === "parent" ? kidList[Math.min(ci, kidList.length - 1)] : children[0]; const View = views[role][tab];
   return (<div className="shell" style={{ "--board": theme }}><aside className="side noprint"><b style={{ fontFamily: "var(--display)", fontSize: "1.2rem", marginBottom: "1rem" }}>{school.name}</b>
     {navFor(role).map(n => <button key={n} aria-current={n === tab} onClick={() => setTab(n)}>{n}</button>)}
     <button onClick={() => r.push("/login")} style={{ marginTop: "auto" }}>Switch role</button></aside>
     <main className="main"><div className="noprint"><h1>{tab}</h1><p className="muted">{cfg.label} view, signed in as {me && me.role === role ? me.name : cfg.user}</p></div>
-      {role === "parent" && <div className="tog noprint" style={{ marginBottom: "1rem" }}>{kidList.map((c, i) => <button key={c.n} className={ci === i ? "on" : ""} onClick={() => setCi(i)}>{c.n.split(" ")[0]}, {c.cls}</button>)}</div>}
+      {role === "parent" && <div className="tog noprint" style={{ marginBottom: "1rem" }}>{kidList.map((c, i) => <button key={c.id || c.n} className={ci === i ? "on" : ""} onClick={() => setCi(i)}>{c.n}, {c.cls}</button>)}</div>}
       <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", alignItems: "start" }}><View ch={ch} theme={theme} setTheme={setTheme} /></div></main></div>);
 }
