@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useStore } from "@/lib/store";
 import * as X from "./extras";
 import { roles, school, T, timetable, homework, grades, fees, announcements, classes, roster, stats, alerts, children, apps, stages, defaulters, slips } from "@/lib/data";
+import { getApps, resetPin } from "@/lib/apply";
 const money = n => "GHS " + n.toLocaleString();
 const letter = v => (v >= 80 ? "A" : v >= 70 ? "B" : v >= 60 ? "C" : v >= 50 ? "D" : "F");
 const avg = a => Math.round(a.reduce((x, y) => x + (+y || 0), 0) / a.length);
@@ -60,14 +61,18 @@ function Assign() { const [h, setH] = useStore("hw", homework); const [t, setT] 
 const Stats = () => { const [ap] = useStore("apps", apps); return <div className="grid span">{[["Enrolled", stats.enrolled], ["Attendance", stats.attendance + "%"], ["Fees collected", stats.collected + "%"], ["Open applications", ap.filter(x => x.s < 3 && !x.dec).length]].map(([l, v]) => <div className="panel" key={l}><div className="stat">{v}</div><span className="muted">{l}</span></div>)}</div>; };
 const Alerts = () => <div className="span"><h3>Needs attention</h3>{alerts.map(a => <div className="warn" key={a}>{a}</div>)}</div>;
 function Pipeline() { const [a, setA] = useStore("apps", apps);
-  const mv = (id, d) => setA(a.map(x => { if (x.id !== id) return x; const s = Math.max(0, Math.min(3, x.s + d)); const login = s === 3 && !x.login ? { user: x.ref || "BN-" + x.id, pin: String(Math.floor(1000 + Math.random() * 9000)) } : x.login; return { ...x, s, login }; }));
+  const mv = (id, d) => setA(a.map(x => { if (x.id !== id) return x; if (d > 0 && x.s === 2 && !x.fee) return x; const s = Math.max(0, Math.min(3, x.s + d)); const nl = s === 3 && !x.login; const login = nl ? { user: x.ref || "BN-" + x.id, pin: String(Math.floor(1000 + Math.random() * 9000)) } : x.login; return { ...x, s, login, mustChange: nl ? true : x.mustChange }; }));
+  const fee = id => setA(a.map(x => x.id === id ? { ...x, fee: !x.fee } : x));
+  const rp = id => { resetPin("app", id); setA(getApps()); };
   const dc = (id, v) => setA(a.map(x => x.id === id ? { ...x, dec: v } : x));
   return <div className="grid span">{stages.map((s, si) => <div className="panel" key={s}><h3>{s} ({a.filter(x => x.s === si).length})</h3>{a.filter(x => x.s === si).map(x => <div className="ev" key={x.id} style={{ display: "block" }}>
     <div style={{ display: "flex", alignItems: "center" }}><span style={{ flex: 1 }}>{x.n}<br /><span className="muted">{x.l}{x.ref ? ", " + x.ref : ""}</span></span>
-      {!x.dec && si > 0 && <button className="mv" aria-label={"Move " + x.n + " back"} onClick={() => mv(x.id, -1)}>‹</button>}{!x.dec && si < 3 && <button className="mv" aria-label={"Move " + x.n + " forward"} onClick={() => mv(x.id, 1)}>›</button>}</div>
+      {!x.dec && si > 0 && <button className="mv" aria-label={"Move " + x.n + " back"} onClick={() => mv(x.id, -1)}>‹</button>}{!x.dec && si < 3 && !(si === 2 && !x.fee) && <button className="mv" aria-label={"Move " + x.n + " forward"} onClick={() => mv(x.id, 1)}>›</button>}</div>
     {x.phone && <p className="muted" style={{ margin: ".2rem 0" }}>{x.by}, {x.phone}</p>}
+    {si === 2 && !x.fee && <><button className="btn dark" onClick={() => fee(x.id)}>Mark acceptance fee paid</button><p className="muted" style={{ margin: ".2rem 0" }}>The family moves to Enrolled once the fee is confirmed.</p></>}
+    {si === 2 && x.fee && <p className="muted" style={{ margin: ".2rem 0" }}>Acceptance fee confirmed — ready to enrol.</p>}
     {x.dec ? <><span className="tag" style={{ background: "#f6d9d3" }}>Declined</span> <button className="mv" style={{ width: "auto", padding: "0 .6rem" }} onClick={() => dc(x.id, false)}>Reopen</button></> : si < 3 && <button className="mv" style={{ width: "auto", padding: "0 .6rem" }} onClick={() => dc(x.id, true)}>Decline</button>}
-    {x.login && <p className="muted" style={{ margin: ".2rem 0" }}>Login {x.login.user}, PIN {x.login.pin}</p>}</div>)}</div>)}</div>; }
+    {x.login && <p className="muted" style={{ margin: ".2rem 0" }}>Login {x.login.user}, PIN {x.login.pin}{x.mustChange ? " (temporary — changes on first sign-in)" : ""} <button className="mv" style={{ width: "auto", padding: "0 .6rem" }} onClick={() => rp(x.id)}>Reset PIN</button></p>}</div>)}</div>)}</div>; }
 function Defaulters() { const [r, setR] = useStore("rem", {}); return <><div className="panel"><h3>Collected this term</h3><div className="stat">{stats.collected}%</div><Bar v={stats.collected} /></div>
   <div className="panel"><h3>Overdue families</h3><table><tbody>{defaulters.map(d => <tr key={d[0]}><td>{d[0]}</td><td>{money(d[1])}</td><td className="muted">{d[2]} days</td><td>{r[d[0]] ? <span className="tag done">Reminded</span> : <button className="btn dark" onClick={() => setR({ ...r, [d[0]]: 1 })}>Remind</button>}</td></tr>)}</tbody></table></div></>; }
 function Broadcast() { const [log, setLog] = useStore("bc", []); const [t, setT] = useState(""); const [a, setA] = useState("All parents");
@@ -78,7 +83,7 @@ function Settings({ theme, setTheme }) { const [csv, setCsv] = useState("name,cl
   const rows = csv.trim().split("\n").slice(1).filter(Boolean).map(l => l.split(","));
   return <><div className="panel"><h3>School colour</h3><p className="muted">Changes the portal look. No code needed.</p><div className="tog">{["#123b2e", "#1d3557", "#5a189a", "#7a1f2b"].map(c => <button key={c} aria-label={"Use " + c} className={theme === c ? "on" : ""} style={{ background: c, width: 38, height: 38 }} onClick={() => setTheme(c)} />)}</div></div>
   <div className="panel stack"><h3>Import students</h3><p className="muted">Paste a CSV with name, class and parent phone.</p><textarea rows="5" value={csv} onChange={e => { setCsv(e.target.value); setOk(false); }} />
-    <table><tbody>{rows.slice(0, 3).map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody></table><button className="btn dark" onClick={() => setOk(true)}>Import {rows.length} students</button>{ok && <p role="status">{rows.length} students and their parents are ready. Invite links go out by SMS.</p>}</div>
+    <table><tbody>{rows.slice(0, 3).map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody></table><button className="btn dark" onClick={() => setOk(true)}>Import {rows.length} students</button>{ok && <p role="status">{rows.length} students and their parents are ready in this demo. In the live system, invite links would go out by SMS.</p>}</div>
   <div className="panel stack"><h3>Start setup again</h3><p className="muted">Clears the school details and all demo data in this browser, then shows the setup questions.</p><button className="btn ghost" onClick={() => { Object.keys(localStorage).filter(k => k.startsWith("gh:")).forEach(k => localStorage.removeItem(k)); location.href = "/"; }}>Reset and run setup</button> <button className="btn ghost" onClick={() => { Object.keys(localStorage).filter(k => k.startsWith("gh:") && k !== "gh:setup").forEach(k => localStorage.removeItem(k)); localStorage.setItem("gh:seeded", "1"); location.reload(); }}>Clear sample data</button></div></>; }
 const Overview = () => <><Stats /><Alerts /><div className="panel span"><h3>Attendance by class</h3>{classes.map(c => <div key={c.n} style={{ marginBottom: ".6rem" }}><b>{c.n}</b><Bar v={Math.round(c.present / c.c * 100)} /></div>)}</div></>;
 function useNotify() { const [, setN] = useStore("notifs", []); return (to, t) => setN(p => [{ to, t }, ...p]); }

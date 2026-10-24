@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useStore } from "@/lib/store";
 import { roster, grades, children, classes, roles } from "@/lib/data";
+import { addStaff, resetPin } from "@/lib/apply";
 const Bar = ({ v }) => <div className="bar"><i style={{ width: v + "%" }} /></div>;
 const Row = ({ children }) => <div className="ev" style={{ alignItems: "center" }}>{children}</div>;
 const Empty = ({ t }) => <p className="muted">{t}</p>;
@@ -42,10 +43,24 @@ export function ExamsStudent() { const [ex] = useStore("exams", [{ subject: "Mat
   return <div className="panel"><h3>My exams</h3>{ex.map((e, i) => <Row key={i}><b>{e.date}</b><span>{e.subject}, {e.time}, {e.hall}, seat {roster.indexOf(children[0].n) + 1}</span></Row>)}</div>; }
 /* 3. Staff */
 const STAFF = [["Mr. Owusu", "Teacher", 1800], ["Ms. Adjei", "Teacher", 1750], ["Mrs. Boateng", "Office", 1400]];
+const STAFF_ROLES = [["teacher", "Teacher"], ["nurse", "Nurse"], ["admin", "School office"]];
+function StaffAccounts() {
+  const [st, setSt] = useStore("staff", []);
+  const [f, setF] = useState({ name: "", role: "teacher", phone: "" });
+  const add = () => { if (!f.name.trim()) return; const rec = addStaff({ name: f.name.trim(), role: f.role, phone: f.phone.trim() }); setSt([...st, rec]); setF({ name: "", role: "teacher", phone: "" }); };
+  const rl = r => (STAFF_ROLES.find(x => x[0] === r) || [r, r])[1];
+  return <div className="panel span stack"><h3>Staff accounts</h3><p className="muted">Create a login for a teacher, nurse or office member. They sign in with their username and PIN, and set their own PIN the first time they sign in.</p>
+    <label>Full name<input value={f.name} onChange={e => setF({ ...f, name: e.target.value })} /></label>
+    <label>Role<select value={f.role} onChange={e => setF({ ...f, role: e.target.value })}>{STAFF_ROLES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
+    <label>Phone<input value={f.phone} onChange={e => setF({ ...f, phone: e.target.value })} /></label>
+    <button className="btn dark" onClick={add}>Create account</button>
+    {st.length ? <table><tbody>{st.map(x => <tr key={x.id}><td>{x.name}<br /><span className="muted">{rl(x.role)}{x.phone ? ", " + x.phone : ""}</span></td><td>Login {x.login.user}, PIN {x.login.pin}{x.mustChange ? " (temporary)" : ""}</td><td><button className="btn dark" onClick={() => { const pin = resetPin("staff", x.id); setSt(st.map(y => y.id === x.id ? { ...y, login: { ...y.login, pin }, mustChange: true } : y)); }}>Reset PIN</button></td></tr>)}</tbody></table> : <p className="muted">No staff accounts yet. The demo logins on the login page still work for exploring.</p>}</div>;
+}
 export function StaffAdmin() {
   const [pay, setPay] = useStore("pay", {}); const [att, setAtt] = useStore("satt", {}); const [lv, setLv] = useStore("leave", []); const nt = useNotify();
   const dec = (i, s) => { setLv(lv.map((x, j) => j === i ? { ...x, s } : x)); nt("teacher", "Leave " + s.toLowerCase() + ": " + lv[i].from); };
   return <>
+    <StaffAccounts />
     <div className="panel span"><h3>Staff attendance and payroll</h3><table><thead><tr><th>Name</th><th>Today</th><th>Monthly pay</th><th></th></tr></thead><tbody>{STAFF.map(([n, r, p]) => <tr key={n}><td>{n}<br /><span className="muted">{r}</span></td>
       <td><span className="tog"><button className={att[n] === "p" ? "on" : ""} onClick={() => setAtt({ ...att, [n]: "p" })}>In</button><button className={"ab " + (att[n] === "a" ? "on" : "")} onClick={() => setAtt({ ...att, [n]: "a" })}>Out</button></span></td>
       <td>GHS {p}</td><td>{pay[n] ? <span className="tag done">Paid</span> : <button className="btn dark" onClick={() => setPay({ ...pay, [n]: 1 })}>Mark paid</button>}</td></tr>)}</tbody></table><p className="muted">Pay figures are samples. Only admins should see this page.</p></div>

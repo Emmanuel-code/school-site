@@ -13,5 +13,5 @@ export default function Track() {
       {a.dec ? <p>Sorry, this application was not successful this time. Please call the office to talk about other options.</p> : <>
         {stages.map((s, i) => <div className="ev" key={s}><b>{i < a.s ? "Done" : i === a.s ? "Now" : "Next"}</b><span>{s}</span></div>)}
         <p style={{ marginTop: ".8rem" }}>{MSG[a.s]}</p>
-        {a.login && <div className="warn">Username <b>{a.login.user}</b>, temporary PIN <b>{a.login.pin}</b>. <Link href="/login">Sign in here</Link></div>}</>}</div>}</main>);
+        {a.login && <div className="warn">Username <b>{a.login.user}</b>, temporary PIN <b>{a.login.pin}</b>.{a.mustChange ? " You will set your own PIN when you first sign in. " : " "}<Link href="/login">Sign in here</Link></div>}</>}</div>}</main>);
 }
