@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { applyDemo } from "@/lib/data";
 import { seedOnce } from "@/lib/seed";
-const LOW = ["Cr\u00e8che & KG", "Nursery", "Primary", "JHS", "SHS"], TER = ["Diploma", "Undergraduate", "Postgraduate", "Short courses"];
+const LOW = ["Crèche & KG", "Nursery", "Primary", "JHS", "SHS"], TER = ["Diploma", "Undergraduate", "Postgraduate", "Short courses"];
 const COLORS = ["#123b2e", "#1d3557", "#5a189a", "#7a1f2b"];
 const TYPES = [["lower", "Lower levels", "Nursery, primary, JHS or SHS. Parents are linked to their children."], ["tertiary", "Tertiary", "Diploma, degree or postgraduate. Students are adults with their own accounts."], ["both", "Both", "Lower levels plus a tertiary arm."]];
 function paint(c) { const r = document.documentElement.style; r.setProperty("--board", c); r.setProperty("--board2", `color-mix(in srgb, ${c} 80%, #fff)`); }
