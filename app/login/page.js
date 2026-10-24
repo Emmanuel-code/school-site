@@ -14,7 +14,7 @@ export default function Login() {
     <form className="panel stack" style={{ maxWidth: 420, margin: "1.5rem 0" }} onSubmit={enter}><h3>New students and parents</h3><p className="muted">Use the username and PIN you received when your application was approved.</p>
       <label>Username<input required value={u} onChange={e => setU(e.target.value)} placeholder="BN-12345" /></label><label>PIN<input required type="password" inputMode="numeric" value={p} onChange={e => setP(e.target.value)} /></label>
       <button className="btn dark">Sign in</button>{err && <p role="alert">{err} <Link href="/track">Track application</Link></p>}</form>
-    <p className="muted">Demo mode: pick who you are to explore the portal.</p>
+    <p className="muted">Demo mode \u2014 tap a role to explore the portal. No username or PIN needed.</p>
     <div className="grid" style={{ marginTop: "1rem" }}>{Object.entries(roles).filter(([k]) => T.adult ? k !== "parent" : true).map(([k, v]) => (
-      <button key={k} className="panel" style={{ textAlign: "left", cursor: "pointer", font: "inherit" }} onClick={() => go(k)}><h3>{v.label}</h3><span className="muted">{v.desc}</span><span style={{ display: "block", marginTop: ".6rem", fontWeight: 600 }}>Continue as {v.user} \u2192</span></button>))}</div></main>);
+      <button key={k} className="panel" style={{ textAlign: "left", cursor: "pointer", font: "inherit" }} onClick={() => go(k)}><h3>{({ parent: "LOGIN AS A PARENT", student: "LOGIN AS A STUDENT", teacher: "LOGIN AS A TEACHER", nurse: "LOGIN AS A NURSE", admin: "LOGIN AS HEADMASTER / PRINCIPAL" })[k] || `LOGIN AS ${v.label.toUpperCase()}`}</h3><span className="muted">{v.desc}</span><span style={{ display: "block", marginTop: ".6rem", fontWeight: 600 }}>Continue as {v.user} \u2192</span></button>))}</div></main>);
 }
